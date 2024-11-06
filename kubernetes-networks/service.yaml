@@ -4,12 +4,11 @@ metadata:
   name: nginx-service
   namespace: homework
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: nginx
   ports:
-    - name: http
+    - name: http-port
       protocol: TCP
-      port: 8080
-      targetPort: 80
-
+      port: 80
+      targetPort: 8080
