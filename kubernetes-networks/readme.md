@@ -1,3 +1,5 @@
+# Hometask 
+
 - Изменить readiness-пробу в манифесте deployment.yaml из
 прошлого ДЗ на httpGet, вызывающую URL /index. html
 - Необходимо создать манифест service.yaml, описывающий сервис
