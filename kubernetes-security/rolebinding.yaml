@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-sa-binding
+  namespace: homework
+subjects:
+- kind: ServiceAccount
+  name: monitoring-sa
+  namespace: homework
+
+как вариант, но вообще надо биндить группу  system:monitoring
+  https://github.com/Kuber-2024-06OTUS/andrei-shtanakov_repo/blob/main/kubernetes-security/monitoring-sa.yaml
