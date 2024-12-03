@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: nginx-deployment3
+ name: nginx-deployment-pvc
  namespace: homework
  labels:
    app: nginx
@@ -15,8 +15,6 @@ spec:
      labels:
        app: nginx
    spec:
-    serviceAccountName: monitoring-sa
-    automountServiceAccountToken: false
     initContainers:
       - name: init-myservice
         image: busybox:1.28
@@ -28,12 +26,13 @@ spec:
     - name: nginx
       image: nginx
       ports:
-      - containerPort: 8000
+      - containerPort: 80
       volumeMounts:
         - name:  hometask-pv-storage
-          mountPath: "/homework"
-        - mountPath: "/homework/conf"
-          name: config
+          mountPath: /homework
+        - name: nginx-conf
+          mountPath: /etc/nginx
+          readOnly: true
       lifecycle:
         preStop:
           exec:
@@ -45,19 +44,18 @@ spec:
               - -c
               - ls /homework/index.html
     nodeSelector:
-        homework: "true"
+        homework: "true" 
     volumes:
-      - name: hometask-pv-storage
-        persistentVolumeClaim:
-          claimName: homework-pv-claim1
-      - name: config
-        configMap:
-          name: nginx-config1
-          items:
-            - key: nginx.conf
-              path: nginx.conf
+    - name: hometask-pv-storage
+      persistentVolumeClaim:
+        claimName: homework-pv-claim-custom
+    - name: nginx-conf
+      configMap:
+        name: nginx-config
+        items:
+         - key: nginx.conf
+           path: nginx.conf
  strategy:
    type: RollingUpdate
    rollingUpdate:
      maxUnavailable: 1
-
