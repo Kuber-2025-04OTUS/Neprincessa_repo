@@ -7,6 +7,7 @@ subjects:
 - kind: ServiceAccount
   name: monitoring-sa
   namespace: homework
+  apiGroup: ""
 roleRef:
   kind: ClusterRole
   name: metrics-monitroring-role
