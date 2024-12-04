@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: app-ingress
   namespace: homework
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - host: homework.otus
