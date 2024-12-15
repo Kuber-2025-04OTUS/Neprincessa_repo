@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cd-sa
+  namespace: homework
+secrets:
+- name: cd-sa-token
