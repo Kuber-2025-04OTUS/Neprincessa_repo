@@ -26,10 +26,13 @@ spec:
     - name: nginx
       image: nginx
       ports:
-      - containerPort: 8080
+      - containerPort: 80
       volumeMounts:
         - name:  shared-volume
           mountPath: /homework
+        - name: nginx-conf
+          mountPath: /etc/nginx
+          readOnly: true
       lifecycle:
         preStop:
           exec:
@@ -45,9 +48,16 @@ spec:
     volumes:
     - name: shared-volume
       emptyDir: {}
+    - name: nginx-conf
+      configMap:
+        name: nginx-config
+        items:
+         - key: nginx.conf
+           path: nginx.conf
  strategy:
    type: RollingUpdate
    rollingUpdate:
      maxUnavailable: 1
+
 
 
