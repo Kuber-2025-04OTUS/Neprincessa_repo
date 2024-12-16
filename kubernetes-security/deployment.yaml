@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx-deployment-pvc
+ namespace: homework
+ labels:
+   app: nginx
+spec:
+ replicas: 3
+ selector:
+   matchLabels:
+     app: nginx
+ template:
+   metadata:
+     labels:
+       app: nginx
+   spec:
+    serviceAccountName: monitoring-sa
+    initContainers:
+      - name: init-myservice
+        image: busybox:1.28
+        command: ['sh', '-c', "echo '<!DOCTYPE html><html><head><title>Kubernetes intro</title></head><body><p>Hello!</p></body></html>' > /init/index.html"]
+        volumeMounts:
+          - name:  hometask-pv-storage
+            mountPath: /init
+    containers:
+    - name: nginx
+      image: nginx
+      ports:
+      - containerPort: 80
+      volumeMounts:
+        - name:  hometask-pv-storage
+          mountPath: /homework
+        - name: nginx-conf
+          mountPath: /etc/nginx
+          readOnly: true
+      lifecycle:
+        preStop:
+          exec:
+            command: ["/bin/sh","-c","rm /homework/index.html"]
+      readinessProbe:
+          exec:
+              command:
+              - sh
+              - -c
+              - ls /homework/index.html
+    nodeSelector:
+        homework: "true" 
+    volumes:
+    - name: hometask-pv-storage
+      persistentVolumeClaim:
+        claimName: homework-pv-claim-custom
+    - name: nginx-conf
+      configMap:
+        name: nginx-config
+        items:
+         - key: nginx.conf
+           path: nginx.conf
+ strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 1

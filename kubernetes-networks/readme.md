@@ -11,3 +11,6 @@
 homework.otus на ранее созданный сервис. В результате запрос
 http://homework.otus/index.html должен отдавать код html
 страницы, находящейся в подах
+
+запустить curl -H "Host: homework.otus" http://homework.otus/index.html
+добавить в /etc/hosts ingress ip
