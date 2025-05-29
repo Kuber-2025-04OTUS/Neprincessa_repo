@@ -1,0 +1,4 @@
+{{- if .Values.ingress.enabled }}
+  Приложение доступно по адресу:
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $.Values.ingress.host }}{{ .path }}
+{{- end }}

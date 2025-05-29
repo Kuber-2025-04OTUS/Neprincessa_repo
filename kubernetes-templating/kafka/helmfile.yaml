@@ -1,0 +1,14 @@
+releases:
+  - name: kafka-prod
+    namespace: prod
+    chart: oci://registry-1.docker.io/bitnamicharts/kafka
+    version: 25.3.5
+    values:
+      - values-prod.yaml
+
+  - name: my-kafka-dev
+    namespace: dev
+    version: 32.2.8
+    chart: oci://registry-1.docker.io/bitnamicharts/kafka
+    values:
+      - values-dev.yaml
