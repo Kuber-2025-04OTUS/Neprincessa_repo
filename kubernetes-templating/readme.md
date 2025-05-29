@@ -2,6 +2,7 @@
 
 ## Задание 1 
 Создать helm-chart позволяющий деплоить приложение, которое у вас получилось при выполнении ДЗ 1-5. При этом необходимо учесть: 
+
     - Основные параметры в манифестах, такие как имена объектов, имена контейнеров, используемых образов, хосты, порты, количество запускаемых реплик должны быть заданы как переменные в шаблонах и конфигурироваться через values.yaml либо через параметры при установке релиза
     - репозиторий и тег образа не должны быть одним параметром 
     - пробы должны быть включаемы/отключаемы через конфиг
@@ -9,37 +10,73 @@
     - при именовании объектов в шаблонах старайтесь придерживаться best practice из лекции
     - добавьте в свой чарт сервис-зависимость из доступных community-чартов. Например, mysql или redis
 
+### Ход работы 
 
-helm create hw-app
+Для начала надо переделать всё на чарты. Для начала надо сгенерировать шаблоны, которые потом уже будут адаптированы под текущее приложение: `helm create hw-app`.
 
-# Переделать в нс номеворк
-![alt text](image.png)
+Теперь надо добавить зависимость, а именно redis. 
+
+`helm repo add stable https://charts.helm.sh/stable` - добавим репо
+
+`helm dependency build .` - теперь необходимо сбилдить зависимости
+
+### Проверка работоспособности 
+
+```
+kubectl get po -n homework 
+kubectl get ing -n homework 
+curl -H "Host: homework.otus" http://homework.otus/index.html
+```
+![alt text](image-8.png)
+
+Важно, что адрес ингресса надо записать в /etc/hosts
+
+![alt text](image-9.png)
+
+Проверим, что примонтированный сервис аккаунт имеет доступ до /metrics 
 
 ![alt text](image-1.png)
 
 ![alt text](image-2.png)
 
-![alt text](image-3.png)
 
-![alt text](image-4.png)
-elm repo add bitnami https://charts.bitnami.com/bitnami
- 1985  helm repo add stable https://charts.helm.sh/stable
- 1986  helm dependency build .
- 1987  helm repo add bitnami https://charts.bitnami.com/bitnami
- 1988  helm dependency build .
- 1989  helm dependency --help
- 1990  helm dependency build .
-![alt text](image-5.png)
+## Задание 2
+
+- Установить kafka из bitnami helm-чарта. Релиз должен иметь следующие параметры:
+    - Установлен в namespace prod
+    - должно быть развернуто 5 брокеров 
+    - должна быть установлена версия kafka версии 3.5.2
+    - для клиентских и межрокерных взаимодействий должен использоваться протокол SASL_PLAINTEXT
+- Установить kafka из bitnami helm-чарта. Релиз должен иметь следующие параметры:
+    - установлен в namespace dev
+    - должен быть развернут 1 брокер
+    - должна быть установлена последняя доступная версия kafka 
+    - для клиентских и межрокерных взаимодействий должен использоваться протокол PLAINTEXT,авторизация для подключения к кластеру отключена
+- Описать 2 предыдущих сценария установки в helmfile, приложить получившийся helmfile.yaml (и иные файлы, если они будут)
+
+### Ход работы 
+
+Для начала надо скачать чарты и посмотреть какие values есть и что можно кастомизировать: `helm pull oci://registry-1.docker.io/bitnamicharts/kafka`. Сохраняется в архив, далее его можно разархивировать и посмотреть values.yaml, на основе которых уже формировать файлики для дева и прода.
+
+Проверим установку кафки: `helm install my-kafka oci://registry-1.docker.io/bitnamicharts/kafka -f kubernetes-templating/kafka/values-dev.yaml -n homework`
+
+![alt text](image-11.png)
+
+Комментарии: 
+- heapOpts пришлось поставить, иначе падали поды, не хватало ресурсов
+- это чтобы тоже сэкономить ресурсы в миникубе 
+persistence:
+  enabled: false
+
+Теперь формируем helmfile, указав нужные версии, файлики `helmfile apply -n homework`
+
+![alt text](image-41.png)
+![alt text](image-51.png)
+![alt text](image-61.png)
 
 
-helm pull oci://registry-1.docker.io/bitnamicharts/kafka
-helm install my-release oci://registry-1.docker.io/bitnamicharts/kafka -f kubernetes-templating/kafka/values-dev.yaml 
+### Проверка работоспособности 
 
-резолвится в приложении !!! 
-![alt text](image-6.png)
+не хватает ресурсов на вмке, но в целом всё поднялось
 
-готово 
-![alt text](image-7.png)
-
-полностью задание 1
-![alt text](image-8.png)
+![alt text](image-10.png)

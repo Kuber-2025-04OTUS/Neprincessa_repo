@@ -26,5 +26,4 @@ controller:
 # heapOpts: -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=50
 
 persistence:
-  # Disable persistence to prevent volume permission issues in Minikube
   enabled: false
