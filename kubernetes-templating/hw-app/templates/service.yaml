@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hw-app.fullname" . }}
+  name: {{ include "hw-app.fullname" . }}-service
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "hw-app.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - name: http-port
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
-      name: http
   selector:
     {{- include "hw-app.selectorLabels" . | nindent 4 }}
