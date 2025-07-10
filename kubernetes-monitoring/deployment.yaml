@@ -43,6 +43,13 @@ spec:
               - sh
               - -c
               - ls /homework/index.html
+    - name: exporter
+      image: nginx/nginx-prometheus-exporter:latest
+      args:
+        - -nginx.scrape-uri=http://localhost/basic_status
+      ports:  
+        - name: nginx-metrics
+          containerPort: 9113  
     nodeSelector:
         homework: "true" 
     volumes:
