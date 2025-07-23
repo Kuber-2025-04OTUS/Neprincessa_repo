@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: nginx-deployment-network
+ name: nginx-deployment-monitoring
  namespace: homework
  labels:
    app: nginx
@@ -46,7 +46,7 @@ spec:
     - name: exporter
       image: nginx/nginx-prometheus-exporter:latest
       args:
-        - -nginx.scrape-uri=http://localhost/basic_status
+        - --nginx.scrape-uri=http://127.0.0.1/basic_status
       ports:  
         - name: nginx-metrics
           containerPort: 9113  
