@@ -9,6 +9,8 @@ spec:
   destinations:
     - namespace: homework
       server: https://kubernetes.default.svc
+    - namespace: homeworkhelm
+      server: https://kubernetes.default.svc      
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
